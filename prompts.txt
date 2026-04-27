@@ -1,0 +1,1 @@
+Me dê o código para Controller, Service, Model, Route, Validator e se é necessário alterar algum outros arquivo para que funcione no backend.

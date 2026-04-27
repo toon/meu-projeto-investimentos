@@ -1,0 +1,259 @@
+@baseUrl = http://localhost:3005/api
+### Admin
+# @email = igor@exemplo.com
+@email = igor@exemplo2.com
+### Admin
+# @email = igor@exemplo4.com
+@senha = senha_segura
+
+### 1. Registro de Usuário
+# @name registro
+POST {{baseUrl}}/auth/registrar
+Content-Type: application/json
+
+{
+  "nome": "Igor",
+  "email": "{{email}}",
+  "senha": "{{senha}}",
+  "papel": "admin"
+}
+
+### 2. Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "senha": "{{senha}}"
+}
+
+### Extração de Variáveis dos Resultados
+@authToken = {{login.response.body.token}}
+# Se o login retornar o id do usuário ou portfólio, use:
+@idPortfolio = {{login.response.body.idPortfolioPadrao}}
+
+### 3. Criar um Ativo (Teste o POST primeiro)
+POST {{baseUrl}}/portfolios/{{idPortfolio}}/ativos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "ticker": "PETR4",
+  "quantidade": 100
+}
+
+### 4. Listar meus portfolios
+GET {{baseUrl}}/portfolios
+Authorization: Bearer {{authToken}}
+
+### Criar porfólio
+POST {{baseUrl}}/portfolios
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "nome": "Novo portfólio",
+    "descricao": "Descrição do portfólio"
+}
+
+### Teste de Erro de Validação (Senha Curta e E-mail Inválido)
+POST {{baseUrl}}/auth/registrar
+Content-Type: application/json
+
+{
+  "nome": "I",
+  "email": "email-invalido",
+  "senha": "123"
+}
+
+###################################################################################################################################
+###################################################################################################################################
+### 1. Registrar Compra 1 (PETR4 a 30,00)
+POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "ticker": "ODPV3",
+  "tipo": "COMPRA",
+  "classeAtivo": "ACAO",
+  "quantidade": 100,
+  "precoUnitario": 25.00,
+  "dataTransacao": "2026-04-24T10:00:00Z"
+}
+
+### 2. Registrar Compra 2 (PETR4 a 40,00)
+POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "ticker": "PETR4",
+  "tipo": "COMPRA",
+  "quantidade": 100,
+  "precoUnitario": 30.00,
+  "dataTransacao": "2026-04-24T10:00:00Z"
+}
+
+### 2. Registrar Compra 2 (PETR4 a 40,00)
+POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "ticker": "PETR4",
+  "tipo": "COMPRA",
+  "quantidade": 100,
+  "precoUnitario": 40.00,
+  "dataTransacao": "2026-04-24T11:00:00Z"
+}
+
+### 3. Verificar Posição Intermediária (Deve mostrar PM de 35,00)
+GET {{baseUrl}}/portfolios/{{idPortfolio}}/posicao
+Authorization: Bearer {{authToken}}
+
+### 4. Registrar Venda TOTAL (200 PETR4 a 50,00)
+POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "ticker": "PETR4",
+  "tipo": "VENDA",
+  "quantidade": 200,
+  "precoUnitario": 50.00,
+  "dataTransacao": "2026-04-24T12:00:00Z"
+}
+
+### 5. Registrar Nova Compra após zerar (PETR4 a 10,00)
+POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "ticker": "PETR4",
+  "tipo": "COMPRA",
+  "quantidade": 100,
+  "precoUnitario": 10.00,
+  "dataTransacao": "2026-04-24T13:00:00Z"
+}
+
+### 6. Verificar Posição Final (O PM DEVE SER 10,00)
+GET {{baseUrl}}/portfolios/{{idPortfolio}}/posicao
+Authorization: Bearer {{authToken}}
+
+### Cadastrar Classe (Necessário ser Admin)
+POST {{baseUrl}}/classes-ativos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Ações Brasileiras",
+  "slug": "ACAO",
+  "descricao": "Ativos de renda variável da B3"
+}
+
+### Cadastrar Classe (Necessário ser Admin)
+POST {{baseUrl}}/classes-ativos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "ETF Amerciano",
+  "slug": "ETF USA",
+  "descricao": "ETFs da bolsa americana"
+}
+
+### Listar Classes (Qualquer usuário logado)
+GET {{baseUrl}}/classes-ativos
+Authorization: Bearer {{authToken}}
+
+### Cadastrar Classe (Necessário ser Admin)
+POST {{baseUrl}}/classes-ativos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "ETF Amerciano",
+  "slug": "ETF USA",
+  "descricao": "ETFs da bolsa americana"
+}
+
+###################################################################################################################################
+###################################################################################################################################
+
+
+### Criar Categoria com ID na URL
+POST {{baseUrl}}/portfolios/{{idPortfolio}}/categorias-ativos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Dólar",
+  "cor": "#fbbf24"
+}
+
+### Listar Categorias do Portfólio
+GET {{baseUrl}}/portfolios/{{idPortfolio}}/categorias-ativos
+Authorization: Bearer {{authToken}}
+
+###################################################################################################################################
+###################################################################################################################################
+
+
+### 1. Criar Corretora XP
+# @name criarXP
+POST {{baseUrl}}/corretoras
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "nome": "XP Investimentos",
+    "nomeCurto": "XP",
+    "codigoCvm": "001",
+    "logoUrl": "https://logodownload.org/wp-content/uploads/2019/08/xp-investimentos-logo.png"
+}
+
+### 2. Criar Corretora BTG Pactual
+# @name criarBTG
+POST {{baseUrl}}/corretoras
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "nome": "BTG Pactual",
+    "nomeCurto": "BTG",
+    "codigoCvm": "002",
+    "logoUrl": "https://logodownload.org/wp-content/uploads/2019/09/btg-pactual-logo.png"
+}
+
+### 3. Criar Corretora Inter
+# @name criarInter
+POST {{baseUrl}}/corretoras
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "nome": "Banco Inter",
+    "nomeCurto": "Inter",
+    "codigoCvm": "003",
+    "logoUrl": "https://logodownload.org/wp-content/uploads/2019/08/banco-inter-logo.png"
+}
+
+### 3. Criar Corretora Inter
+# @name criarInter
+POST {{baseUrl}}/corretoras
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "nome": "CM Capital",
+    "nomeCurto": "CM",
+    "codigoCvm": "004",
+    "logoUrl": "https://logodownload.org/wp-content/uploads/2019/08/cm-capital-logo.png"
+}
+
+### 4. Listar todas as Corretoras (Qualquer usuário logado)
+GET {{baseUrl}}/corretoras
+Authorization: Bearer {{authToken}}
