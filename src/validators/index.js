@@ -3,9 +3,9 @@ const portfolioValidator = require("./portfolioValidator");
 const transacaoValidator = require("./transacaoValidator");
 const classeAtivoValidator = require("./classeAtivoValidator");
 const categoriaAtivoValidator = require("./categoriaAtivoValidator");
+const corretoraValidator = require("./corretoraValidator");
+const investidorValidator = require("./investidorValidator");
 const ativoValidator = require("./ativoValidator");
-const corretoraValidator = require("./corretoraValidator"); // Nova entidade aqui
-
 
 module.exports = {
   ...usuarioValidator, // Usamos o 'spread' (...) para extrair tudo o que
@@ -15,4 +15,6 @@ module.exports = {
   ...categoriaAtivoValidator,
   ...ativoValidator,
   ...corretoraValidator,
+  ...investidorValidator,
+  ...ativoValidator,
 };

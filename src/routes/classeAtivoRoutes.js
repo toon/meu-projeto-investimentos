@@ -1,23 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const classeAtivoController = require("../controllers/classeAtivoController");
-// const autenticar = require("../middlewares/autenticar");
-
-// // REMOVA AS CHAVES { } se o arquivo autorizacao.js exportar apenas uma função
-// const carregarHabilidades = require("../middlewares/autorizacaoGlobal");
+const { classeAtivoController } = require("../controllers");
 const { autenticar, autorizacaoGlobal } = require("../middlewares");
 
-router.use(autenticar);
-router.use(autorizacaoGlobal); 
+// GET: Apenas autenticar (qualquer um logado vê)
+// Usamos autorizacaoGlobal() vazio apenas para carregar as habilidades no req.habilidades
+router.get("/", 
+  autenticar, 
+  autorizacaoGlobal(), 
+  classeAtivoController.listar
+);
 
-router.get("/", autenticar, classeAtivoController.listar);
-
-// Só passa para o controller se o middleware validar 'gerir' 'ClasseAtivo'
-router.post(
-  "/",
-  autenticar,
-  autorizacaoGlobal("gerir", "ClasseAtivo"),
-  classeAtivoController.criar,
+// POST: Autenticar + Validar se é Admin
+router.post("/", 
+  autenticar, 
+  autorizacaoGlobal("gerir", "ClasseAtivo"), 
+  classeAtivoController.criar
 );
 
 module.exports = router;

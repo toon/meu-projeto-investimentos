@@ -1,14 +1,23 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
-const categoriaAtivoController = require("../controllers/categoriaAtivoController");
-// const autenticar = require("../middlewares/autenticar");
-// const autorizar = require("../middlewares/autorizacaoPortfolio");
-const { autenticar, autorizacaoPortfolio: autorizar } = require("../middlewares");
+const { categoriaAtivoController } = require("../controllers");
+const { autenticar, autorizacaoPortfolio } = require("../middlewares");
 
-router.use(autenticar);
-router.use(autorizar);
+// Rota: /api/portfolios/:idPortfolio/categorias
+// GET: Lista as categorias do portfólio
+router.get(
+  "/",
+  autenticar,
+  autorizacaoPortfolio,
+  categoriaAtivoController.listar,
+);
 
-router.post("/", categoriaAtivoController.criar);
-router.get("/", categoriaAtivoController.listar);
+// POST: Cria uma nova categoria no portfólio
+router.post(
+  "/",
+  autenticar,
+  autorizacaoPortfolio,
+  categoriaAtivoController.criar,
+);
 
 module.exports = router;

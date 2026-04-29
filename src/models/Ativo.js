@@ -1,10 +1,23 @@
-const mongoose = require('mongoose');
-const { accessibleRecordsPlugin } = require('@casl/mongoose');
+const mongoose = require("mongoose");
 
-const ativoSchema = new mongoose.Schema({
-  ticker: { type: String, required: true },
-  idCriador: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' }
-}, { timestamps: true });
+const AtivoSchema = new mongoose.Schema(
+  {
+    ticker: {
+      type: String,
+      required: true,
+      unique: true,
+      uppercase: true,
+      trim: true,
+    },
+    nome: { type: String, required: true, trim: true },
+    idClasseAtivo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ClasseAtivo",
+      required: true,
+    },
+    slugClasseAtivo: { type: String }, // Híbrido para busca rápida
+  },
+  { timestamps: true },
+);
 
-ativoSchema.plugin(accessibleRecordsPlugin);
-module.exports = mongoose.model('Ativo', ativoSchema);
+module.exports = mongoose.model("Ativo", AtivoSchema);

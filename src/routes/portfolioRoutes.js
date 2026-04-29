@@ -7,6 +7,7 @@ const transacaoController = require('../controllers/transacaoController'); // No
 const { autenticar, autorizacaoPortfolio: autorizar } = require("../middlewares");
 
 const categoriaAtivoRoutes = require("./categoriaAtivoRoutes");
+const investidorRoutes = require("./investidorRoutes");
 
 router.use(autenticar);
 
@@ -25,6 +26,8 @@ router.post('/:idPortfolio/transacoes', autorizar, transacaoController.registrar
 router.get('/:idPortfolio/posicao', autorizar, portfolioController.obterPosicaoAtual);
 
 router.use("/:idPortfolio/categorias-ativos", autorizar, categoriaAtivoRoutes);
+
+router.use("/:idPortfolio/investidores", autorizar, investidorRoutes);
 
 // Ver detalhes de um portfólio específico (GET /api/portfolios/:idPortfolio)
 // router.get("/:idPortfolio", autorizar, portfolioController.obterPorId);

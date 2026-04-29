@@ -1,18 +1,9 @@
 const { z } = require("zod");
 
 const ativoSchema = z.object({
-  ticker: z
-    .string()
-    .min(3, "O ticker deve ter pelo menos 3 caracteres")
-    .max(10, "Ticker muito longo")
-    .trim()
-    .transform((t) => t.toUpperCase()),
-
-  quantidade: z
-    .number({
-      invalid_type_error: "A quantidade deve ser um número",
-    })
-    .positive("A quantidade deve ser maior que zero"),
+  ticker: z.string().min(3).max(10).toUpperCase(),
+  nome: z.string().min(2),
+  idClasseAtivo: z.string().regex(/^[0-9a-fA-F]{24}$/, "ID da Classe inválido"),
 });
 
 module.exports = { ativoSchema };

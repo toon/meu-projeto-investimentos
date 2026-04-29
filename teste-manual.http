@@ -1,9 +1,10 @@
 @baseUrl = http://localhost:3005/api
 ### Admin
 # @email = igor@exemplo.com
+### Usuário
 @email = igor@exemplo2.com
 ### Admin
-# @email = igor@exemplo4.com
+@email = igor@exemplo4.com
 @senha = senha_segura
 
 ### 1. Registro de Usuário
@@ -69,77 +70,32 @@ Content-Type: application/json
 
 ###################################################################################################################################
 ###################################################################################################################################
-### 1. Registrar Compra 1 (PETR4 a 30,00)
+### Criar uma Transação de Opção (Ticker diferente da Referência)
+# @name criarTransacao
 POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
-Content-Type: application/json
 Authorization: Bearer {{authToken}}
+Content-Type: application/json
 
 {
-  "ticker": "ODPV3",
-  "tipo": "COMPRA",
-  "classeAtivo": "ACAO",
-  "quantidade": 100,
-  "precoUnitario": 25.00,
-  "dataTransacao": "2026-04-24T10:00:00Z"
-}
-
-### 2. Registrar Compra 2 (PETR4 a 40,00)
-POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
-Content-Type: application/json
-Authorization: Bearer {{authToken}}
-
-{
-  "ticker": "PETR4",
-  "tipo": "COMPRA",
-  "quantidade": 100,
-  "precoUnitario": 30.00,
-  "dataTransacao": "2026-04-24T10:00:00Z"
-}
-
-### 2. Registrar Compra 2 (PETR4 a 40,00)
-POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
-Content-Type: application/json
-Authorization: Bearer {{authToken}}
-
-{
-  "ticker": "PETR4",
-  "tipo": "COMPRA",
-  "quantidade": 100,
-  "precoUnitario": 40.00,
-  "dataTransacao": "2026-04-24T11:00:00Z"
+    "idPortfolio": "{{idPortfolio}}",
+    "idAtivoReferencia": "ID_DO_ATIVO_PETR4",
+    "tickerOperado": "PETRE281",
+    "idCorretora": "ID_DA_XP",
+    "idInvestidor": "ID_DO_INVESTIDOR_IGOR",
+    "idClasseAtivo": "ID_DA_CLASSE_OPCOES",
+    "operacao": "COMPRA",
+    "quantidade": 100,
+    "precoUnitario": 0.50,
+    "dataTransacao": "2026-04-24T10:00:00Z"
 }
 
 ### 3. Verificar Posição Intermediária (Deve mostrar PM de 35,00)
+# @name verificarPosicaoIntermediaria
 GET {{baseUrl}}/portfolios/{{idPortfolio}}/posicao
 Authorization: Bearer {{authToken}}
 
-### 4. Registrar Venda TOTAL (200 PETR4 a 50,00)
-POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
-Content-Type: application/json
-Authorization: Bearer {{authToken}}
-
-{
-  "ticker": "PETR4",
-  "tipo": "VENDA",
-  "quantidade": 200,
-  "precoUnitario": 50.00,
-  "dataTransacao": "2026-04-24T12:00:00Z"
-}
-
-### 5. Registrar Nova Compra após zerar (PETR4 a 10,00)
-POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
-Content-Type: application/json
-Authorization: Bearer {{authToken}}
-
-{
-  "ticker": "PETR4",
-  "tipo": "COMPRA",
-  "quantidade": 100,
-  "precoUnitario": 10.00,
-  "dataTransacao": "2026-04-24T13:00:00Z"
-}
-
 ### 6. Verificar Posição Final (O PM DEVE SER 10,00)
+# @name verificarPosicaoFinal
 GET {{baseUrl}}/portfolios/{{idPortfolio}}/posicao
 Authorization: Bearer {{authToken}}
 
@@ -169,21 +125,20 @@ Authorization: Bearer {{authToken}}
 GET {{baseUrl}}/classes-ativos
 Authorization: Bearer {{authToken}}
 
+
 ### Cadastrar Classe (Necessário ser Admin)
 POST {{baseUrl}}/classes-ativos
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "nome": "ETF Amerciano",
-  "slug": "ETF USA",
-  "descricao": "ETFs da bolsa americana"
+  "nome": "ETF B3",
+  "slug": "ETF",
+  "descricao": "ETFs da bolsa brasileira"
 }
 
 ###################################################################################################################################
 ###################################################################################################################################
-
-
 ### Criar Categoria com ID na URL
 POST {{baseUrl}}/portfolios/{{idPortfolio}}/categorias-ativos
 Content-Type: application/json
@@ -257,3 +212,115 @@ Content-Type: application/json
 ### 4. Listar todas as Corretoras (Qualquer usuário logado)
 GET {{baseUrl}}/corretoras
 Authorization: Bearer {{authToken}}
+
+### 1. Criar Investidor (Ex: Cônjuge)
+# @name criarInvestidor
+POST {{baseUrl}}/portfolios/{{idPortfolio}}/investidores
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "nome": "Crislaine Gruber",
+    "apelido": "Cris",
+    "cpf": "12345678903"
+}
+
+### 2. Listar Investidores do Portfólio
+# @name listarInvestidores
+GET {{baseUrl}}/portfolios/{{idPortfolio}}/investidores
+Authorization: Bearer {{authToken}}
+
+### 1. Criar Ativo: PETR4 (Ações)
+POST {{baseUrl}}/ativos
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "ticker": "PETR4",
+    "nome": "Petróleo Brasileiro S.A. - Petrobras",
+    "idClasseAtivo": "69ed0d598e4480a6b6930faa"
+}
+
+### 2. Criar Ativo: VALE3 (Ações)
+POST {{baseUrl}}/ativos
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "ticker": "VALE3",
+    "nome": "Vale S.A.",
+    "idClasseAtivo": "69ed0d598e4480a6b6930faa"
+}
+
+### 3. Criar Ativo: HGLG11 (FIIs)
+POST {{baseUrl}}/ativos
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "ticker": "HGLG11",
+    "nome": "CGHG Logística Fundo de Investimento Imobiliário",
+    "idClasseAtivo": "69ed0d9f8e4480a6b6930faf"
+}
+
+### 4. Criar Ativo: IVVB11 (ETFs)
+POST {{baseUrl}}/ativos
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "ticker": "IVVB11",
+    "nome": "iShares S&P 500 Fundo de Investimento - ETF",
+    "idClasseAtivo": "69f05106e7f611614f31e67d"
+}
+
+### 5. Criar Ativo: AAPL34 (BDRs)
+POST {{baseUrl}}/ativos
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "ticker": "AAPL34",
+    "nome": "Apple Inc. - BDR",
+    "idClasseAtivo": "69ed0ded8e4480a6b6930fb9"
+}
+
+### 6. Listar ativos (Qualquer usuário logado)
+GET {{baseUrl}}/ativos
+Authorization: Bearer {{authToken}}
+
+### 1. Registrar Compra (Abre Ciclo)
+POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "idPortfolio": "69ed108e1f01c653f77e4e75",
+    "idInvestidor": "69efc0237807fdbe21fcdcf1",
+    "idAtivoReferencia": "69f050c5e7f611614f31e67a",
+    "idCorretora": "69eee7b2c185fc6c0211d54f",
+    "idClasseAtivo": "69ed0d598e4480a6b6930faa",
+    "dataTransacao": "2025-04-25T10:00:00Z",
+    "operacao": "COMPRA",
+    "quantidade": 100,
+    "precoUnitario": 40.50,
+    "taxas": 5.00
+}
+
+### 2. Registrar Venda Total (Encerra o Ciclo)
+POST {{baseUrl}}/portfolios/69ed108e1f01c653f77e4e75/transacoes
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "idPortfolio": "69ed108e1f01c653f77e4e75",
+    "idInvestidor": "69efc0237807fdbe21fcdcf1",
+    "idAtivoReferencia": "69f050c5e7f611614f31e67a",
+    "idCorretora": "69eee7b2c185fc6c0211d54f",
+    "idClasseAtivo": "69ed0d598e4480a6b6930faa",
+    "dataTransacao": "2025-04-28T15:00:00Z",
+    "operacao": "VENDA",
+    "quantidade": 110,
+    "precoUnitario": 42.00,
+    "taxas": 5.00
+}

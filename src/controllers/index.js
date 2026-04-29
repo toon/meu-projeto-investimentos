@@ -3,7 +3,9 @@ const portfolioController = require("./portfolioController");
 const transacaoController = require("./transacaoController");
 const classeAtivoController = require("./classeAtivoController");
 const categoriaAtivoController = require("./categoriaAtivoController");
-const corretoraController = require("./corretoraController"); // Nova entidade aqui
+const corretoraController = require("./corretoraController");
+const investidorController = require("./investidorController");
+const ativoController = require("./ativoController");
 
 module.exports = {
   usuarioController,
@@ -11,5 +13,7 @@ module.exports = {
   transacaoController,
   classeAtivoController,
   categoriaAtivoController,
-  corretoraController
+  corretoraController,
+  investidorController,
+  ativoController,
 };

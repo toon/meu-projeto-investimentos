@@ -1,10 +1,6 @@
 require('dotenv').config(); // Carrega as variáveis do .env
 const express = require('express');
 const conectarBanco = require('./config/bancoDados');
-// const autenticacaoRoutes = require('./routes/autenticacaoRoutes');
-// const portfolioRoutes = require("./routes/portfolioRoutes");
-// const classeAtivoRoutes = require("./routes/classeAtivoRoutes");
-// const categoriaAtivoRoutes = require("./routes/categoriaAtivoRoutes");
 const routes = require('./routes');
 
 const app = express();
@@ -17,10 +13,6 @@ conectarBanco();
 
 // 3. Definição de Rotas
 console.log("Configurando rotas de autenticação...");
-// app.use('/api/auth', autenticacaoRoutes);
-// app.use('/api/portfolios', portfolioRoutes);
-// app.use('/api/classes-ativos', classeAtivoRoutes);
-// app.use("/api/portfolios/:idPortfolio/categorias-ativos", categoriaAtivoRoutes);
 app.use("/api", routes);
 
 

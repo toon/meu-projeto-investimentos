@@ -24,6 +24,7 @@ const definirHabilidadesPara = (usuario, idPortfolioAlvo) => {
     if (vinculo) {
       if (vinculo.papel === "dono") {
         can("gerir", "all");
+        // can("gerir", "Investidor");
         // Com 'all', ele já ganha 'gerir' em 'CategoriaAtivo' automaticamente.
       } else if (vinculo.papel === "leitor") {
         can("ler", "all");

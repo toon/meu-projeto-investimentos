@@ -7,36 +7,64 @@ const transacaoSchema = new mongoose.Schema(
       ref: "Portfolio",
       required: true,
     },
+
     idCriador: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Usuario",
       required: true,
     },
-    ticker: { type: String, required: true },
-    tipo: {
+
+    // OBRIGATÓRIO: O Ativo "Pai" (ex: PETR4)
+    idAtivoReferencia: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Ativo",
+      required: true,
+    },
+    ativoReferencia: { type: String }, // Híbrido: PETR4
+
+    // O Ticker Real da operação (pode ser PETR4 ou PETRE281)
+    tickerOperado: { type: String, required: true, uppercase: true },
+
+    // Agora o tipo é uma operação financeira (Compra/Venda)
+    operacao: {
       type: String,
       enum: ["COMPRA", "VENDA", "SUBSCRICAO", "BONIFICACAO"],
       required: true,
     },
+
     quantidade: { type: Number, required: true },
     precoUnitario: { type: Number, required: true },
     dataTransacao: { type: Date, default: Date.now },
 
-    classeAtivo: {
-      type: String,
-      enum: ["ACAO", "OPCAO", "FII", "ETF", "BDR"],
+    // Classe de Ativo (Global - Ex: Ações, FIIs)
+    idClasseAtivo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ClasseAtivo",
       required: true,
     },
-    corretora: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Corretora", // Nome exato do modelo global que criamos
-      required: [
-        true,
-        "A corretora é obrigatória para registrar uma transação",
-      ],
-    },
+    nomeClasseAtivo: { type: String },
 
-    ativoReferencia: { type: String }, // Útil para o caso das Opções que você citou
+    // Categoria de Ativo (Local - Ex: Buy & Hold, Trade)
+    idCategoriaAtivo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CategoriaAtivo",
+    },
+    nomeCategoriaAtivo: { type: String },
+
+    // Corretora e Investidor (Híbridos que já tínhamos)
+    idCorretora: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Corretora",
+      required: true,
+    },
+    nomeCurtoCorretora: { type: String },
+
+    idInvestidor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Investidor",
+      required: true,
+    },
+    apelidoInvestidor: { type: String },
   },
   { timestamps: true },
 );

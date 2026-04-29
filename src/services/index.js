@@ -3,8 +3,10 @@ const categoriaAtivoService = require("./categoriaAtivoService");
 const classeAtivoService = require("./classeAtivoService");
 const portfolioService = require("./portfolioService");
 const transacaoService = require("./transacaoService");
-const corretoraService = require("./corretoraService"); // Nova entidade aqui
-
+const corretoraService = require("./corretoraService");
+const investidorService = require("./investidorService");
+const ativoService = require("./ativoService");
+const posicaoAtivoService = require("./posicaoAtivoService");
 
 module.exports = {
   autenticacaoService,
@@ -13,4 +15,7 @@ module.exports = {
   portfolioService,
   transacaoService,
   corretoraService,
+  investidorService,
+  ativoService,
+  posicaoAtivoService,
 };
