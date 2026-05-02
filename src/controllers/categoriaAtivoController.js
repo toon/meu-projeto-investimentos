@@ -2,7 +2,7 @@ const { categoriaAtivoService } = require("../services");
 const { categoriaAtivoSchema } = require("../validators");
 
 class CategoriaAtivoController {
-  async criar(req, res) {
+  async criar(req, res, next) {
     try {
       const { idPortfolio } = req.params; // ID vem da URL
       const dadosCorpo = categoriaAtivoSchema.parse(req.body); // Dados validados pelo Zod
@@ -16,18 +16,18 @@ class CategoriaAtivoController {
 
       res.status(201).json(novaCategoria);
     } catch (error) {
-      res.status(400).json({ erro: error.message || "Dados inválidos" });
+      next(error);
     }
   }
 
-  async listar(req, res) {
+  async listar(req, res, next) {
     try {
       const { idPortfolio } = req.params;
       const categorias =
         await categoriaAtivoService.listarPorPortfolio(idPortfolio);
       res.json(categorias);
     } catch (error) {
-      res.status(500).json({ erro: error.message });
+      next(error);
     }
   }
 }

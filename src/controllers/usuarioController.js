@@ -6,7 +6,7 @@ const {
 const { z } = require("zod");
 
 class UsuarioController {
-  async registrar(req, res) {
+  async registrar(req, res, next) {
     try {
       const dadosValidados = registroSchema.parse(req.body);
       const usuario = await autenticacaoService.registrar(dadosValidados);
@@ -16,27 +16,11 @@ class UsuarioController {
         id: usuario._id,
       });
     } catch (erro) {
-      // Verificamos se é um erro do Zod (ele costuma ter a propriedade 'issues' ou 'errors')
-      if (erro.issues || erro.errors) {
-        const detalhes = (erro.issues || erro.errors).map((e) => ({
-          campo: e.path[0],
-          mensagem: e.message,
-        }));
-
-        return res.status(400).json({
-          erro: "Falha na validação",
-          detalhes,
-        });
-      }
-
-      // Erro de negócio (ex: e-mail já cadastrado)
-      return res.status(400).json({
-        erro: erro.message || "Ocorreu um erro inesperado",
-      });
+      next(erro);
     }
   }
 
-  async login(req, res) {
+  async login(req, res, next) {
     try {
       const credenciais = loginSchema.parse(req.body);
       const resultado = await autenticacaoService.login(
@@ -46,12 +30,7 @@ class UsuarioController {
 
       return res.json(resultado);
     } catch (erro) {
-      if (erro instanceof z.ZodError) {
-        return res
-          .status(400)
-          .json({ erro: "E-mail ou senha em formato inválido." });
-      }
-      return res.status(401).json({ erro: erro.message });
+      next(erro);
     }
   }
 }

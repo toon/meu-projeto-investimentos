@@ -1,14 +1,21 @@
 const express = require("express");
-const router = express.Router({ mergeParams: true });
-const { posicaoAtivoController } = require("../controllers");
+const router = express.Router();
+const posicaoAtivoController = require("../controllers/posicaoAtivoController");
 const { autenticar, autorizacaoPortfolio } = require("../middlewares");
 
 // 1. Por Portfolio: GET /api/portfolios/:idPortfolio/posicoes
+// router.get(
+//   "/",
+//   autenticar,
+//   autorizacaoPortfolio,
+//   posicaoAtivoController.listarPorPortfolio,
+// );
+
+// GET /api/posicoes/consolidado
 router.get(
   "/",
   autenticar,
-  autorizacaoPortfolio,
-  posicaoAtivoController.listarPorPortfolio,
+  posicaoAtivoController.listarConsolidadoGeral
 );
 
 // 2. Por Investidor: GET /api/portfolios/:idPortfolio/posicoes/investidor/:idInvestidor

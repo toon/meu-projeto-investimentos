@@ -21,6 +21,7 @@ const posicaoAtivoSchema = new mongoose.Schema(
     // Metadados para performance e filtros
     tickerAtivo: { type: String, required: true },
     slugClasseAtivo: { type: String, required: true }, // Ex: "acoes", "fiis", "etfs"
+    portfolioNome: { type: String, required: true },
 
     dataInicio: {
       type: Date,

@@ -2,7 +2,7 @@ const { investidorService } = require("../services");
 const { investidorSchema } = require("../validators");
 
 class InvestidorController {
-  async criar(req, res) {
+  async criar(req, res, next) {
     try {
       const dadosValidados = investidorSchema.parse(req.body);
 
@@ -14,18 +14,18 @@ class InvestidorController {
 
       return res.status(201).json(investidor);
     } catch (erro) {
-      return res.status(400).json({ erro: erro.message });
+      next(erro);
     }
   }
 
-  async listar(req, res) {
+  async listar(req, res, next) {
     try {
       const { idPortfolio } = req.params;
       const investidores =
         await investidorService.listarPorPortfolio(idPortfolio);
       return res.json(investidores);
     } catch (erro) {
-      return res.status(500).json({ erro: erro.message });
+      next(erro);
     }
   }
 }

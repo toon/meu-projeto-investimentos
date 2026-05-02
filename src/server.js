@@ -2,6 +2,8 @@ require('dotenv').config(); // Carrega as variáveis do .env
 const express = require('express');
 const conectarBanco = require('./config/bancoDados');
 const routes = require('./routes');
+const manipuladorErros = require('./middlewares/manipuladorErros');
+
 
 const app = express();
 
@@ -14,6 +16,7 @@ conectarBanco();
 // 3. Definição de Rotas
 console.log("Configurando rotas de autenticação...");
 app.use("/api", routes);
+app.use(manipuladorErros);
 
 
 // 4. Tratamento de Rotas não encontradas (404)

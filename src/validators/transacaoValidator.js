@@ -2,8 +2,11 @@ const { z } = require("zod");
 
 const transacaoSchema = z.object({
   idPortfolio: z
-    .string()
+    .string({ required_error: "O portfólio é obrigatório" })
     .regex(/^[0-9a-fA-F]{24}$/, "ID do Portfólio inválido"),
+  idInvestidor: z
+    .string({ required_error: "O investidor é obrigatório"})
+    .regex(/^[0-9a-fA-F]{24}$/, "ID do Investidor inválido"),
   idAtivoReferencia: z
     .string()
     .regex(/^[0-9a-fA-F]{24}$/, "ID do Ativo inválido"),
@@ -18,7 +21,8 @@ const transacaoSchema = z.object({
     .string()
     .regex(/^[0-9a-fA-F]{24}$/, "ID da Categoria inválido")
     .optional(),
-
+  portfolioNome: z
+    .string().optional(),
   tickerOperado: z
     .string()
     .optional()

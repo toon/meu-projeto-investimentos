@@ -1,35 +1,55 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const portfolioController = require("../controllers/portfolioController");
-const transacaoController = require('../controllers/transacaoController'); // Novo Controller
-// const autenticar = require("../middlewares/autenticar");
-// const autorizar = require("../middlewares/autorizacaoPortfolio");
-const { autenticar, autorizacaoPortfolio: autorizar } = require("../middlewares");
+// const transacaoController = require('../controllers/transacaoController'); // Novo Controller
+const { autenticar, autorizacaoPortfolio } = require("../middlewares");
 
 const categoriaAtivoRoutes = require("./categoriaAtivoRoutes");
 const investidorRoutes = require("./investidorRoutes");
 
-router.use(autenticar);
-
 // Criar um novo portfólio (POST /api/portfolios)
-router.post("/", portfolioController.criarPortfolio);
+router.post("/", autenticar, portfolioController.criarPortfolio);
 
 // Listar os portfólios que eu tenho acesso (GET /api/portfolios)
-router.get("/", autorizar, portfolioController.listarMeusPortfolios);
+router.get(
+  "/",
+  autenticar,
+  portfolioController.listarMeusPortfolios,
+);
 
 // --- Gestão de Transações (O "Filme") ---
-// POST /api/portfolios/:idPortfolio/transacoes
-router.post('/:idPortfolio/transacoes', autorizar, transacaoController.registrar);
+// // POST /api/portfolios/:idPortfolio/transacoes
+// router.post(
+//   "/:idPortfolio/transacoes",
+//   autenticar,
+//   autorizacaoPortfolio,
+//   transacaoController.registrar,
+// );
 
 // --- Visão Consolidada (A "Foto" / Saldo / PM) ---
 // GET /api/portfolios/:idPortfolio/posicao
-router.get('/:idPortfolio/posicao', autorizar, portfolioController.obterPosicaoAtual);
+router.get(
+  "/:idPortfolio/posicao",
+  autenticar,
+  autorizacaoPortfolio,
+  portfolioController.obterPosicaoAtual,
+);
 
-router.use("/:idPortfolio/categorias-ativos", autorizar, categoriaAtivoRoutes);
+router.use(
+  "/:idPortfolio/categorias-ativos",
+  autenticar,
+  autorizacaoPortfolio,
+  categoriaAtivoRoutes,
+);
 
-router.use("/:idPortfolio/investidores", autorizar, investidorRoutes);
+router.use(
+  "/:idPortfolio/investidores",
+  autenticar,
+  autorizacaoPortfolio,
+  investidorRoutes,
+);
 
 // Ver detalhes de um portfólio específico (GET /api/portfolios/:idPortfolio)
-// router.get("/:idPortfolio", autorizar, portfolioController.obterPorId);
+// router.get("/:idPortfolio", autorizacaoPortfolio, portfolioController.obterPorId);
 
 module.exports = router;

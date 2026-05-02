@@ -33,6 +33,7 @@ Content-Type: application/json
 @authToken = {{login.response.body.token}}
 # Se o login retornar o id do usuário ou portfólio, use:
 @idPortfolio = {{login.response.body.idPortfolioPadrao}}
+@idPortfolio2 = 69f23e6e87311ebcbd674085
 
 ### 3. Criar um Ativo (Teste o POST primeiro)
 POST {{baseUrl}}/portfolios/{{idPortfolio}}/ativos
@@ -54,8 +55,8 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-    "nome": "Novo portfólio",
-    "descricao": "Descrição do portfólio"
+    "nome": "Novo portfólio 2",
+    "descricao": "Descrição do portfólio 2"
 }
 
 ### Teste de Erro de Validação (Senha Curta e E-mail Inválido)
@@ -289,38 +290,51 @@ Content-Type: application/json
 GET {{baseUrl}}/ativos
 Authorization: Bearer {{authToken}}
 
+@PETR4 = "69f050c5e7f611614f31e67a"
+@VALE3 = "69f04ffce98f8b10459e869a"
+
 ### 1. Registrar Compra (Abre Ciclo)
-POST {{baseUrl}}/portfolios/{{idPortfolio}}/transacoes
+POST {{baseUrl}}/transacoes
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
     "idPortfolio": "69ed108e1f01c653f77e4e75",
     "idInvestidor": "69efc0237807fdbe21fcdcf1",
-    "idAtivoReferencia": "69f050c5e7f611614f31e67a",
+    "idAtivoReferencia": "69f04ffce98f8b10459e869a",
     "idCorretora": "69eee7b2c185fc6c0211d54f",
     "idClasseAtivo": "69ed0d598e4480a6b6930faa",
     "dataTransacao": "2025-04-25T10:00:00Z",
     "operacao": "COMPRA",
-    "quantidade": 100,
+    "quantidade": 200,
     "precoUnitario": 40.50,
     "taxas": 5.00
 }
 
 ### 2. Registrar Venda Total (Encerra o Ciclo)
-POST {{baseUrl}}/portfolios/69ed108e1f01c653f77e4e75/transacoes
+POST {{baseUrl}}/transacoes
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
     "idPortfolio": "69ed108e1f01c653f77e4e75",
     "idInvestidor": "69efc0237807fdbe21fcdcf1",
-    "idAtivoReferencia": "69f050c5e7f611614f31e67a",
+    "idAtivoReferencia": {{VALE3}},
     "idCorretora": "69eee7b2c185fc6c0211d54f",
     "idClasseAtivo": "69ed0d598e4480a6b6930faa",
     "dataTransacao": "2025-04-28T15:00:00Z",
     "operacao": "VENDA",
-    "quantidade": 110,
+    "quantidade": 50,
     "precoUnitario": 42.00,
     "taxas": 5.00
 }
+
+### Consolidado por portfólio
+# @name consolidadoPorPortfolio
+GET {{baseUrl}}/portfolios/{{idPortfolio2}}/posicao
+Authorization: Bearer {{authToken}}
+
+### Consolidado global
+# @name consolidadoGlobal
+GET {{baseUrl}}/posicoes
+Authorization: Bearer {{authToken}}

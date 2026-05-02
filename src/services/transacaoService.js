@@ -6,6 +6,7 @@ const {
   Investidor,
   ClasseAtivo,
   CategoriaAtivo,
+  Portfolio,
 } = require("../models");
 const posicaoAtivoService = require("./posicaoAtivoService");
 
@@ -55,7 +56,11 @@ class TransacaoService {
             .select("nome")
             .session(session)
         : null;
-        
+      const portfolio = await Portfolio.findById(dados.idPortfolio).session(
+        session,
+      );
+
+      if (!portfolio) throw new Error("Portfólio não encontrado");
       if (!ativoRef) throw new Error("Ativo de referência não encontrado.");
 
       // 2. Montamos o objeto com a lógica de campos híbridos
@@ -74,10 +79,15 @@ class TransacaoService {
       const novaTransacao = new Transacao(dadosCompletos);
       await novaTransacao.save({ session });
 
+      const dadosParaPosicao = {
+        ...novaTransacao.toObject(),
+        portfolioNome: portfolio.nome, // <-- Aqui garantimos que o nome vai para a Posição
+      };
+      
       // 4. Atualizamos ou Criamos a Posição do Ativo (também dentro da sessão)
       // Passamos o ativoRef para que o service da posição tenha o slugClasseAtivo
       await posicaoAtivoService.atualizarPosicao(
-        novaTransacao,
+        dadosParaPosicao,
         ativoRef,
         session,
       );
