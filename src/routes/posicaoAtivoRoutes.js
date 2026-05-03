@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const posicaoAtivoController = require("../controllers/posicaoAtivoController");
-const { autenticar, autorizacaoPortfolio } = require("../middlewares");
+const { autenticar, escopoPortfolios } = require("../middlewares");
 
 // 1. Por Portfolio: GET /api/portfolios/:idPortfolio/posicoes
 // router.get(
@@ -11,27 +11,36 @@ const { autenticar, autorizacaoPortfolio } = require("../middlewares");
 //   posicaoAtivoController.listarPorPortfolio,
 // );
 
-// GET /api/posicoes/consolidado
+// 1. Consolidado Geral: GET /api/posicoes/
 router.get(
   "/",
   autenticar,
+  escopoPortfolios,
   posicaoAtivoController.listarConsolidadoGeral
 );
 
-// 2. Por Investidor: GET /api/portfolios/:idPortfolio/posicoes/investidor/:idInvestidor
+// 2. Por Investidor (Global): GET /api/posicoes/investidor/:idInvestidor
 router.get(
   "/investidor/:idInvestidor",
   autenticar,
-  autorizacaoPortfolio,
+  escopoPortfolios,
   posicaoAtivoController.listarPorInvestidor,
 );
 
-// 3. Por Ativo: GET /api/portfolios/:idPortfolio/posicoes/ativo/:idAtivo
+// 3. Por Ativo (Global): GET /api/posicoes/ativo/:idAtivo
 router.get(
   "/ativo/:idAtivo",
   autenticar,
-  autorizacaoPortfolio,
+  escopoPortfolios,
   posicaoAtivoController.listarPorAtivo,
+);
+
+// 4. Por portfolio (Global): GET /api/posicoes/portfolio/:idPortfolio
+router.get(
+  "/portfolio/:idPortfolio",
+  autenticar,
+  escopoPortfolios,
+  posicaoAtivoController.listarPorPortfolio,
 );
 
 module.exports = router;

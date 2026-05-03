@@ -55,20 +55,6 @@ class PortfolioController {
       next(erro);
     }
   }
-  // Dentro da classe PortfolioController no arquivo src/controllers/portfolioController.js
-
-  async obterPosicaoAtual(req, res, next) {
-    try {
-      const { idPortfolio } = req.params;
-
-      // 1. Chamamos o service (que fará o cálculo do PM e saldos)
-      const posicao = await portfolioService.calcularPosicao(idPortfolio);
-
-      return res.json(posicao);
-    } catch (erro) {
-      next(erro);
-    }
-  }
 }
 
 module.exports = new PortfolioController();

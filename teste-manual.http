@@ -294,21 +294,23 @@ Authorization: Bearer {{authToken}}
 @VALE3 = "69f04ffce98f8b10459e869a"
 
 ### 1. Registrar Compra (Abre Ciclo)
+@idPortfolio1 = "69f23e6e87311ebcbd674085"
+@idPortfolio2 = "69ed108e1f01c653f77e4e75"
 POST {{baseUrl}}/transacoes
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
-    "idPortfolio": "69ed108e1f01c653f77e4e75",
+    "idPortfolio": {{idPortfolio1}},
     "idInvestidor": "69efc0237807fdbe21fcdcf1",
-    "idAtivoReferencia": "69f04ffce98f8b10459e869a",
+    "idAtivoReferencia": {{VALE3}},
     "idCorretora": "69eee7b2c185fc6c0211d54f",
     "idClasseAtivo": "69ed0d598e4480a6b6930faa",
     "dataTransacao": "2025-04-25T10:00:00Z",
     "operacao": "COMPRA",
-    "quantidade": 200,
-    "precoUnitario": 40.50,
-    "taxas": 5.00
+    "quantidade": 100.00,
+    "precoUnitario": 10.00,
+    "taxas": 0.00
 }
 
 ### 2. Registrar Venda Total (Encerra o Ciclo)
@@ -317,24 +319,53 @@ Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
-    "idPortfolio": "69ed108e1f01c653f77e4e75",
+    "idPortfolio": {{idPortfolio1}},
     "idInvestidor": "69efc0237807fdbe21fcdcf1",
-    "idAtivoReferencia": {{VALE3}},
+    "idAtivoReferencia": {{PETR4}},
     "idCorretora": "69eee7b2c185fc6c0211d54f",
     "idClasseAtivo": "69ed0d598e4480a6b6930faa",
     "dataTransacao": "2025-04-28T15:00:00Z",
     "operacao": "VENDA",
-    "quantidade": 50,
-    "precoUnitario": 42.00,
-    "taxas": 5.00
+    "quantidade": 100.00,
+    "precoUnitario": 16.00,
+    "taxas": 0.00
 }
 
 ### Consolidado por portfólio
 # @name consolidadoPorPortfolio
-GET {{baseUrl}}/portfolios/{{idPortfolio2}}/posicao
+GET {{baseUrl}}/posicoes/portfolio/69ed108e1f01c653f77e4e75/
+Authorization: Bearer {{authToken}}
+
+### Consolidado por investidor
+# @name consolidadoPorInvestidor
+GET {{baseUrl}}/posicoes/investidor/69efc0237807fdbe21fcdcf1/
+Authorization: Bearer {{authToken}}
+
+### Consolidado por Ativo
+# @name consolidadoPorAtivo
+GET {{baseUrl}}/posicoes/ativo/69f04ffce98f8b10459e869a/
 Authorization: Bearer {{authToken}}
 
 ### Consolidado global
 # @name consolidadoGlobal
 GET {{baseUrl}}/posicoes
 Authorization: Bearer {{authToken}}
+
+### Transação de dividendo
+# @name ADD_DIVIDENDO
+POST {{baseUrl}}/transacoes
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "idPortfolio": "69f23e6e87311ebcbd674085",
+  "idInvestidor": "69efc0237807fdbe21fcdcf1",
+  "idAtivoReferencia": {{PETR4}},
+  "idCorretora": "69eee7b2c185fc6c0211d54f",
+  "idClasseAtivo": "69ed0d598e4480a6b6930faa",
+  "operacao": "DIVIDENDO",
+  "quantidade": 200.00,
+  "precoUnitario": 1.25,
+  "dataCom": "2025-04-25T09:00:00.000Z",
+  "dataTransacao": "2025-04-25T09:00:00Z"
+}

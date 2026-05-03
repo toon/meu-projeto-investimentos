@@ -28,13 +28,14 @@ const transacaoSchema = new mongoose.Schema(
     // Agora o tipo é uma operação financeira (Compra/Venda)
     operacao: {
       type: String,
-      enum: ["COMPRA", "VENDA", "SUBSCRICAO", "BONIFICACAO"],
+      enum: ["COMPRA", "VENDA", "LANCAMENTO", "EXPIRACAO", "SUBSCRICAO", "BONIFICACAO", "DIVIDENDO", "JCP", "RENDIMENTO", "AMORTIZACAO"],
       required: true,
     },
 
     quantidade: { type: Number, required: true },
     precoUnitario: { type: Number, required: true },
     dataTransacao: { type: Date, default: Date.now },
+    dataCom: { type: Date }, // Opcional: Data base para direito a proventos
 
     // Classe de Ativo (Global - Ex: Ações, FIIs)
     idClasseAtivo: {
@@ -65,6 +66,13 @@ const transacaoSchema = new mongoose.Schema(
       required: true,
     },
     apelidoInvestidor: { type: String },
+
+    // Vínculo opcional para Operações Estruturadas (Pernas)
+    idEstrategiaOpcoes: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "EstrategiaOpcoes",
+    },
+    nomeEstrategiaOpcoes: { type: String },
   },
   { timestamps: true },
 );

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const portfolioController = require("../controllers/portfolioController");
+const posicaoAtivoController = require("../controllers/posicaoAtivoController");
 // const transacaoController = require('../controllers/transacaoController'); // Novo Controller
 const { autenticar, autorizacaoPortfolio } = require("../middlewares");
 
@@ -28,12 +29,12 @@ router.get(
 
 // --- Visão Consolidada (A "Foto" / Saldo / PM) ---
 // GET /api/portfolios/:idPortfolio/posicao
-router.get(
-  "/:idPortfolio/posicao",
-  autenticar,
-  autorizacaoPortfolio,
-  portfolioController.obterPosicaoAtual,
-);
+// router.get(
+//   "/:idPortfolio/posicao",
+//   autenticar,
+//   autorizacaoPortfolio,
+//   posicaoAtivoController.listarPorPortfolio,
+// );
 
 router.use(
   "/:idPortfolio/categorias-ativos",

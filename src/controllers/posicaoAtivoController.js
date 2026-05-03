@@ -4,10 +4,10 @@ class PosicaoAtivoController {
   
   async listarConsolidadoGeral(req, res, next) {
     try {
-      // Passamos o objeto usuario completo que o seu middleware de autenticação já carregou
-      const posicoes = await posicaoAtivoService.buscarConsolidadoGlobal(
-        req.usuario,
-      );
+      const posicoes = await posicaoAtivoService.buscarPosicoesConsolidadas({
+        idsPortfolios: req.escopoPortfolios,
+        status: "ABERTA",
+      });
 
       return res.status(200).json(posicoes);
     } catch (erro) {
@@ -22,17 +22,19 @@ class PosicaoAtivoController {
   async listarPorPortfolio(req, res, next) {
     try {
       const { idPortfolio } = req.params;
-      const { status } = req.query; // Ex: ?status=ABERTA ou ?status=ENCERRADA
+      const { status } = req.query;
 
-      console.log(idPortfolio);
+      // Segurança: Verifica se o portfólio da URL pertence aos acessos do usuário
+      if (!req.escopoPortfolios.some((id) => id.toString() === idPortfolio.toString())) {
+        return res.status(403).json({ erro: "Acesso negado a este portfólio." });
+      }
 
-      // O Service deve retornar a soma de todos os investidores por ativo
-      const posicoes = await posicaoAtivoService.buscarConsolidadoPorPortfolio(
-        idPortfolio || null,
-        status || "ABERTA",
-      );
+      const posicoes = await posicaoAtivoService.buscarPosicoesConsolidadas({
+        idPortfolio,
+        status: status || "ABERTA",
+      });
 
-      return res.json(posicoes);
+      return res.status(200).json(posicoes);
     } catch (erro) {
       next(erro);
     }
@@ -46,12 +48,13 @@ class PosicaoAtivoController {
       const { idInvestidor } = req.params;
       const { status } = req.query;
 
-      const posicoes = await posicaoAtivoService.buscarPorInvestidor(
+      const posicoes = await posicaoAtivoService.buscarPosicoesConsolidadas({
+        idsPortfolios: req.escopoPortfolios,
         idInvestidor,
-        status || "ABERTA",
-      );
+        status: status || "ABERTA",
+      });
 
-      return res.json(posicoes);
+      return res.status(200).json(posicoes);
     } catch (erro) {
       next(erro);
     }
@@ -63,12 +66,14 @@ class PosicaoAtivoController {
    */
   async listarPorAtivo(req, res, next) {
     try {
-      const { idPortfolio, idAtivo } = req.params;
+      const { idAtivo } = req.params;
 
-      const detalheAtivo = await posicaoAtivoService.buscarInvestidoresPorAtivo(
-        idPortfolio,
+      // O segundo parâmetro "investidor" instrui o serviço a agrupar por pessoa
+      const detalheAtivo = await posicaoAtivoService.buscarPosicoesConsolidadas({
+        idsPortfolios: req.escopoPortfolios,
         idAtivo,
-      );
+        status: "ABERTA",
+      }, "investidor");
 
       return res.json(detalheAtivo);
     } catch (erro) {

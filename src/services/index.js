@@ -7,6 +7,7 @@ const corretoraService = require("./corretoraService");
 const investidorService = require("./investidorService");
 const ativoService = require("./ativoService");
 const posicaoAtivoService = require("./posicaoAtivoService");
+const estrategiaOpcoesService = require("./estrategiaOpcoesService");
 
 module.exports = {
   autenticacaoService,
@@ -18,4 +19,5 @@ module.exports = {
   investidorService,
   ativoService,
   posicaoAtivoService,
+  estrategiaOpcoesService,
 };

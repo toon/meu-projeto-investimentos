@@ -20,8 +20,10 @@ const posicaoAtivoSchema = new mongoose.Schema(
 
     // Metadados para performance e filtros
     tickerAtivo: { type: String, required: true },
+    tickerOperado: { type: String, required: true, uppercase: true }, // Ex: "PETR4" ou "PETRE281"
     slugClasseAtivo: { type: String, required: true }, // Ex: "acoes", "fiis", "etfs"
     portfolioNome: { type: String, required: true },
+    nomeCategoriaAtivo: { type: String, default: "Geral" },
 
     dataInicio: {
       type: Date,
@@ -40,12 +42,14 @@ const posicaoAtivoSchema = new mongoose.Schema(
     quantidadeTotal: { type: Number, default: 0 },
     precoMedio: { type: Number, default: 0 },
     custoTotal: { type: Number, default: 0 },
+    aporteEfetivo: { type: Number, default: 0 },
+    totalProventos: { type: Number, default: 0 },
   }, { timestamps: true },
 );
 
 // Índice para garantir unicidade de posição aberta por ativo/investidor
 posicaoAtivoSchema.index(
-  { idInvestidor: 1, idAtivo: 1, status: 1 },
+  { idInvestidor: 1, idAtivo: 1, tickerOperado: 1, status: 1 },
   { unique: true, partialFilterExpression: { status: "ABERTA" } },
 );
 

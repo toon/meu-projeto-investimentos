@@ -4,7 +4,6 @@ const conectarBanco = require('./config/bancoDados');
 const routes = require('./routes');
 const manipuladorErros = require('./middlewares/manipuladorErros');
 
-
 const app = express();
 
 // 1. Middlewares Globais
@@ -16,15 +15,16 @@ conectarBanco();
 // 3. Definição de Rotas
 console.log("Configurando rotas de autenticação...");
 app.use("/api", routes);
-app.use(manipuladorErros);
-
 
 // 4. Tratamento de Rotas não encontradas (404)
 app.use((req, res) => {
   res.status(404).json({ erro: "Rota não encontrada." });
 });
 
-// 5. Inicialização do Servidor
+// 5. Manipulador Global de Erros (Deve ser rigorosamente o ÚLTIMO middleware)
+app.use(manipuladorErros);
+
+// 6. Inicialização do Servidor
 const PORTA = process.env.PORTA || 3000;
 app.listen(PORTA, () => {
   console.log(`🚀 Servidor a correr na porta ${PORTA}`);
