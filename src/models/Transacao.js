@@ -37,11 +37,16 @@ const transacaoSchema = new mongoose.Schema(
     dataTransacao: { type: Date, default: Date.now },
     dataCom: { type: Date }, // Opcional: Data base para direito a proventos
 
+    // --- Dados Específicos para Derivativos / Opções (Opcionais) ---
+    precoAtivoBase: { type: Number }, // Preço da ação "pai" no momento da transação
+    strike: { type: Number },         // Preço de exercício
+    vencimento: { type: Date },       // Data de validade da opção
+    tipoOpcao: { type: String, enum: ["CALL", "PUT"] },
+
     // Classe de Ativo (Global - Ex: Ações, FIIs)
     idClasseAtivo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ClasseAtivo",
-      required: true,
     },
     nomeClasseAtivo: { type: String },
 

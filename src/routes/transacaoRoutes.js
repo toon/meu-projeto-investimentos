@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { transacaoController } = require("../controllers");
-const { autenticar } = require("../middlewares");
+const { autenticar, escopoPortfolios } = require("../middlewares");
 // Se você criou um middleware para validar acesso aos IDs do body, importe-o aqui
 // const { autorizacaoGeral } = require("../middlewares/autorizacao");
 
@@ -12,12 +12,12 @@ const { autenticar } = require("../middlewares");
  */
 router.post("/", autenticar, transacaoController.registrar);
 
-// /**
-//  * @route GET /api/transacoes
-//  * @desc  Lista transações com filtros opcionais (idPortfolio, idInvestidor, ticker)
-//  * @access Private (Gestor)
-//  */
-// router.get("/", autenticar, transacaoController.listar);
+/**
+ * @route GET /api/transacoes
+ * @desc  Lista o extrato (linha do tempo) de transações com filtros dinâmicos
+ * @access Private (Gestor)
+ */
+router.get("/", autenticar, escopoPortfolios, transacaoController.listarExtrato);
 
 // /**
 //  * @route GET /api/transacoes/:id

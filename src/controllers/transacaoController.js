@@ -25,6 +25,29 @@ class TransacaoController {
       next(erro);
     }
   }
+
+  async listarExtrato(req, res, next) {
+    try {
+      const { idPortfolio, idInvestidor, tickerOperado } = req.query;
+
+      // Segurança: garante que o usuário só veja transações dos seus portfólios
+      const idsPermitidos = req.escopoPortfolios || [];
+
+      if (idPortfolio && !idsPermitidos.some((id) => id.toString() === idPortfolio.toString())) {
+        return res.status(403).json({ erro: "Acesso negado a este portfólio." });
+      }
+
+      const extrato = await transacaoService.listarExtrato({
+        idsPortfolios: idPortfolio ? [idPortfolio] : idsPermitidos,
+        idInvestidor,
+        tickerOperado,
+      });
+
+      return res.json(extrato);
+    } catch (erro) {
+      next(erro);
+    }
+  }
 }
 
 module.exports = new TransacaoController();

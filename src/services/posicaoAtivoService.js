@@ -16,6 +16,10 @@ class PosicaoAtivoService {
       precoUnitario,
       dataTransacao,
       nomeCategoriaAtivo,
+      precoAtivoBase,
+      strike,
+      vencimento,
+      tipoOpcao,
     } = transacao;
 
     // 1. Encontrar a Posição Base (Depende da Operação)
@@ -85,6 +89,10 @@ class PosicaoAtivoService {
         idCriador: transacao.idCriador,
         aporteEfetivo: aporteHerdado, // O valor da operação será somado/subtraído abaixo
         totalProventos: proventosHerdados,
+        precoAtivoBaseAbertura: precoAtivoBase,
+        strike,
+        vencimento,
+        tipoOpcao,
         quantidadeTotal: 0,
         custoTotal: 0,
         precoMedio: 0,
@@ -168,6 +176,9 @@ class PosicaoAtivoService {
     if (posicao.quantidadeTotal === 0 && ["COMPRA", "VENDA", "EXPIRACAO", "AMORTIZACAO"].includes(operacao)) {
       posicao.status = "ENCERRADA";
       posicao.dataFim = dataTransacao;
+      if (precoAtivoBase !== undefined) {
+        posicao.precoAtivoBaseEncerramento = precoAtivoBase;
+      }
     }
 
     return await posicao.save({ session });
@@ -206,20 +217,26 @@ class PosicaoAtivoService {
       totalProventos: { $sum: "$totalProventos" },
       // Movemos todos os metadados para fora do IF. 
       // Assim, a API retorna um objeto padronizado em todas as requisições.
-      ticker: { $first: "$tickerAtivo" },
+      tickerOperado: { $first: "$tickerOperado" },
+      ativoReferencia: { $first: "$tickerAtivo" },
       slugClasse: { $first: "$slugClasseAtivo" },
       categoria: { $first: "$nomeCategoriaAtivo" },
       nomePortfolio: { $first: "$portfolioNome" },
       idAtivo: { $first: "$idAtivo" },
       idInvestidor: { $first: "$idInvestidor" },
       idPortfolio: { $first: "$idPortfolio" },
+      precoAtivoBaseAbertura: { $first: "$precoAtivoBaseAbertura" },
+      precoAtivoBaseEncerramento: { $first: "$precoAtivoBaseEncerramento" },
+      strike: { $first: "$strike" },
+      vencimento: { $first: "$vencimento" },
+      tipoOpcao: { $first: "$tipoOpcao" },
     };
 
     // 3. Define a chave primária de agrupamento e ordenação
     let sortStage = {};
     if (agruparPor === "ativo") {
-      groupStage._id = "$idAtivo";
-      sortStage = { ticker: 1 };
+      groupStage._id = "$tickerOperado"; // Agrupa separando a ação mãe das suas opções!
+      sortStage = { tickerOperado: 1 };
     } else if (agruparPor === "investidor") {
       groupStage._id = "$idInvestidor";
       sortStage = { quantidadeTotal: -1 };

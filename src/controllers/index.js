@@ -6,6 +6,7 @@ const categoriaAtivoController = require("./categoriaAtivoController");
 const corretoraController = require("./corretoraController");
 const investidorController = require("./investidorController");
 const ativoController = require("./ativoController");
+const estrategiaOpcoesController = require("./estrategiaOpcoesController");
 
 module.exports = {
   usuarioController,
@@ -16,4 +17,5 @@ module.exports = {
   corretoraController,
   investidorController,
   ativoController,
+  estrategiaOpcoesController,
 };

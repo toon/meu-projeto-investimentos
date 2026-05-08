@@ -13,7 +13,10 @@ const transacaoSchema = z.object({
   idCorretora: z
     .string()
     .regex(/^[0-9a-fA-F]{24}$/, "ID da Corretora inválido"),
-  idClasseAtivo: z.string().regex(/^[0-9a-fA-F]{24}$/, "ID da Classe inválido"),
+  idClasseAtivo: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/, "ID da Classe inválido")
+    .optional(),
   idCategoriaAtivo: z
     .string()
     .regex(/^[0-9a-fA-F]{24}$/, "ID da Categoria inválido")
@@ -31,6 +34,10 @@ const transacaoSchema = z.object({
     .string()
     .regex(/^[0-9a-fA-F]{24}$/, "ID da Estratégia inválido")
     .optional(),
+  precoAtivoBase: z.number().positive().optional(),
+  strike: z.number().positive().optional(),
+  vencimento: z.string().datetime().optional(),
+  tipoOpcao: z.enum(["CALL", "PUT"]).optional(),
   dataTransacao: z
     .string()
     .datetime()

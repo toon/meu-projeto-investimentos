@@ -25,6 +25,13 @@ const posicaoAtivoSchema = new mongoose.Schema(
     portfolioNome: { type: String, required: true },
     nomeCategoriaAtivo: { type: String, default: "Geral" },
 
+    // --- Dados Específicos para Derivativos / Opções (Opcionais) ---
+    precoAtivoBaseAbertura: { type: Number },
+    precoAtivoBaseEncerramento: { type: Number },
+    strike: { type: Number },
+    vencimento: { type: Date },
+    tipoOpcao: { type: String, enum: ["CALL", "PUT"] },
+
     dataInicio: {
       type: Date,
       required: [true, "A data de início da posição é obrigatória"],

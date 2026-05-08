@@ -4,9 +4,11 @@ class PosicaoAtivoController {
   
   async listarConsolidadoGeral(req, res, next) {
     try {
+      const { status } = req.query;
+
       const posicoes = await posicaoAtivoService.buscarPosicoesConsolidadas({
         idsPortfolios: req.escopoPortfolios,
-        status: "ABERTA",
+        status: status || "ABERTA",
       });
 
       return res.status(200).json(posicoes);

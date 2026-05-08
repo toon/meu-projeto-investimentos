@@ -5,6 +5,21 @@ class EstrategiaOpcoesService {
     return await EstrategiaOpcoes.create(dados);
   }
 
+  async obterPorId(id) {
+    return await EstrategiaOpcoes.findById(id);
+  }
+
+  async encerrar(id) {
+    return await EstrategiaOpcoes.findByIdAndUpdate(
+      id,
+      {
+        status: "ENCERRADA",
+        dataEncerramento: new Date(),
+      },
+      { new: true }
+    );
+  }
+
   /**
    * Busca as estratégias e calcula o resultado financeiro consolidado de suas "pernas" (Transações).
    * @param {Object} filtros - { idsPortfolios, status }

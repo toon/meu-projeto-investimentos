@@ -4,7 +4,7 @@
 ### Usuário
 @email = igor@exemplo2.com
 ### Admin
-@email = igor@exemplo4.com
+# @email = igor@exemplo4.com
 @senha = senha_segura
 
 ### 1. Registro de Usuário
@@ -351,6 +351,11 @@ Authorization: Bearer {{authToken}}
 GET {{baseUrl}}/posicoes
 Authorization: Bearer {{authToken}}
 
+### Consolidado global
+# @name consolidadoGlobalEncerradas
+GET {{baseUrl}}/posicoes?status=ENCERRADA
+Authorization: Bearer {{authToken}}
+
 ### Transação de dividendo
 # @name ADD_DIVIDENDO
 POST {{baseUrl}}/transacoes
@@ -369,3 +374,97 @@ Content-Type: application/json
   "dataCom": "2025-04-25T09:00:00.000Z",
   "dataTransacao": "2025-04-25T09:00:00Z"
 }
+
+### Registrar Venda de Opção (VALE)
+# @name vendaOpcaoVale
+POST {{baseUrl}}/transacoes
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "idPortfolio": {{idPortfolio1}},
+    "idInvestidor": "69efc0237807fdbe21fcdcf1",
+    "idAtivoReferencia": {{VALE3}},
+    "tickerOperado": "VALEE700",
+    "idCorretora": "69eee7b2c185fc6c0211d54f",
+    "idClasseAtivo": "ID_DA_CLASSE_OPCOES",
+    "dataTransacao": "2025-05-10T10:00:00Z",
+    "operacao": "VENDA",
+    "quantidade": 100.00,
+    "precoUnitario": 1.50,
+    "taxas": 0
+}
+
+### Registrar Lançamento de Opção (Venda a Descoberto)
+# @name lancamentoOpcao
+POST {{baseUrl}}/transacoes
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "idPortfolio": {{idPortfolio1}},
+    "idInvestidor": "69efc0237807fdbe21fcdcf1",
+    "idAtivoReferencia": {{PETR4}},
+    "tickerOperado": "PETRE281",
+    "idCorretora": "69eee7b2c185fc6c0211d54f",
+    "dataTransacao": "2026-05-02T10:00:00Z",
+    "operacao": "LANCAMENTO",
+    "quantidade": 1000,
+    "precoUnitario": 1.50,
+    "precoAtivoBase": 27.50,
+    "strike": 28.00,
+    "vencimento": "2026-05-15T23:59:59Z",
+    "tipoOpcao": "CALL"
+}
+
+### Registrar Recompra de Opção (Fechamento da Venda a Descoberto)
+# @name recompraOpcao
+POST {{baseUrl}}/transacoes
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "idEstrategiaOpcoes": "69f7da23fd99447521290eae",
+    "idPortfolio": {{idPortfolio1}},
+    "idInvestidor": "69efc0237807fdbe21fcdcf1",
+    "idAtivoReferencia": {{PETR4}},
+    "tickerOperado": "PETRE281",
+    "idCorretora": "69eee7b2c185fc6c0211d54f",
+    "dataTransacao": "2026-05-03T10:00:00Z",
+    "operacao": "COMPRA",
+    "precoAtivoBase": 26.50,
+    "quantidade": 1000,
+    "precoUnitario": 0.50
+}
+
+### Extrato/Histórico da Posição
+# @name extratoPosicao
+GET {{baseUrl}}/transacoes?idPortfolio=69f23e6e87311ebcbd674085&idInvestidor=69efc0237807fdbe21fcdcf1&tickerOperado=PETRE281
+Authorization: Bearer {{authToken}}
+
+### Criar Estratégia de Opções (Ex: Venda Coberta)
+# @name criarEstrategiaVendaCoberta
+POST {{baseUrl}}/estrategias-opcoes
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "idPortfolio": {{idPortfolio1}},
+    "idInvestidor": "69efc0237807fdbe21fcdcf1",
+    "nome": "Venda Coberta PETR4 Maio",
+    "tipo": "VENDA_COBERTA"
+}
+
+### Listar Estratégias Abertas
+GET {{baseUrl}}/estrategias-opcoes?status=ABERTA
+Authorization: Bearer {{authToken}}
+
+### Listar Estratégias Encerradas
+GET {{baseUrl}}/estrategias-opcoes?status=ENCERRADA
+Authorization: Bearer {{authToken}}
+
+### Encerrar uma Estratégia Manualmente
+# @name encerrarEstrategia
+PATCH {{baseUrl}}/estrategias-opcoes/69f7da23fd99447521290eae/encerrar
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
