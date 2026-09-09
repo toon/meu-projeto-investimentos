@@ -6,6 +6,7 @@ const CategoriaAtivo = require("./CategoriaAtivo");
 const Corretora = require("./Corretora"); 
 const Investidor = require("./Investidor");
 const Ativo = require("./Ativo");
+const TagAtivo = require("./TagAtivo");
 const EstrategiaOpcoes = require("./EstrategiaOpcoes");
 
 module.exports = {
@@ -17,6 +18,6 @@ module.exports = {
   CategoriaAtivo,
   Corretora,
   Investidor,
-  Ativo,
+  TagAtivo,
   EstrategiaOpcoes,
 };

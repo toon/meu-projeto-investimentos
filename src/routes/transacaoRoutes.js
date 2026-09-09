@@ -1,16 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const { transacaoController } = require("../controllers");
-const { autenticar, escopoPortfolios } = require("../middlewares");
+const { autenticar, escopoPortfolios, autorizacaoPortfolio } = require("../middlewares");
 // Se você criou um middleware para validar acesso aos IDs do body, importe-o aqui
 // const { autorizacaoGeral } = require("../middlewares/autorizacao");
 
 /**
  * @route POST /api/transacoes
- * @desc  Registra uma nova transação (Compra, Venda, Bonificação, Subscrição)
+ * @desc  Registra uma nova transação (Compra, Venda, Bonificação, Subscrição) protegida pelo CASL
  * @access Private (Gestor)
  */
-router.post("/", autenticar, transacaoController.registrar);
+router.post(
+    "/", 
+    autenticar, 
+    autorizacaoPortfolio("gerir", "Transacao"), 
+    transacaoController.registrar
+);
 
 /**
  * @route GET /api/transacoes

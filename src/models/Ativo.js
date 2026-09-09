@@ -16,6 +16,11 @@ const AtivoSchema = new mongoose.Schema(
       required: true,
     },
     slugClasseAtivo: { type: String }, // Híbrido para busca rápida
+    tagsAtivos: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "TagAtivo",
+      default: [],
+    },
   },
   { timestamps: true },
 );

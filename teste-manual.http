@@ -2,9 +2,9 @@
 ### Admin
 # @email = igor@exemplo.com
 ### Usuário
-@email = igor@exemplo2.com
+# @email = igor@exemplo2.com
 ### Admin
-# @email = igor@exemplo4.com
+@email = igor@exemplo4.com
 @senha = senha_segura
 
 ### 1. Registro de Usuário
@@ -41,7 +41,7 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "ticker": "PETR4",
+  "ticker": "SAUD3",
   "quantidade": 100
 }
 
@@ -117,7 +117,7 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "nome": "ETF Amerciano",
+  "nome": "ETF Americano",
   "slug": "ETF USA",
   "descricao": "ETFs da bolsa americana"
 }

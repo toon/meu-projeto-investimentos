@@ -1,0 +1,175 @@
+@baseUrl = http://localhost:3005/api
+
+############################################################################################
+############################################################################################
+###
+###    1. USUÁRIOS
+###
+############################################################################################
+############################################################################################
+
+### Cadastrar usuário ADM
+@nome = Admin Igor
+@email = igor@exemplo.com
+@senha = senha_segura
+
+############################################################################################
+### 1. Registro de Usuário Administrador
+# @name registro
+POST {{baseUrl}}/auth/registrar
+Content-Type: application/json
+
+{
+  "nome": "{{nome}}",
+  "email": "{{email}}",
+  "senha": "{{senha}}",
+  "papel": "admin"
+}
+
+### Cadastrar usuário comum
+@nome2 = Usuário Igor
+@email2 = igor2@exemplo.com
+@senha2 = senha_segura
+
+############################################################################################
+### 1. Registro de Usuário Comum
+# @name registro
+POST {{baseUrl}}/auth/registrar
+Content-Type: application/json
+
+{
+  "nome": "{{nome2}}",
+  "email": "{{email2}}",
+  "senha": "{{senha2}}",
+  "papel": "usuario"
+}
+
+### Cadastrar usuário comum
+@nome3 = Usuário Crislaine
+@email3 = cris@exemplo.com
+@senha3 = senha_segura
+
+############################################################################################
+### 1. Registro de Usuário Comum
+# @name registro
+POST {{baseUrl}}/auth/registrar
+Content-Type: application/json
+
+{
+  "nome": "{{nome3}}",
+  "email": "{{email3}}",
+  "senha": "{{senha3}}",
+  "papel": "usuario"
+}
+
+
+############################################################################################
+############################################################################################
+###
+###    2. LOGIN
+###
+############################################################################################
+############################################################################################
+
+### Cadastrar usuário comum
+@email_login = igor@exemplo.com
+@senha_login = senha_segura
+
+############################################################################################
+### 2. Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email_login}}",
+  "senha": "{{senha_login}}"
+}
+
+### Extração de Variáveis dos Resultados
+@authToken = {{login.response.body.token}}
+@idPortfolio = {{login.response.body.idPortfolioPadrao}}
+
+############################################################################################
+############################################################################################
+###
+###    3. TAGs Ativos
+###
+############################################################################################
+############################################################################################
+
+
+############################################################################################
+### Criar tag raiz
+# @name TagRendaVariavel
+POST {{baseUrl}}/tags-ativos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Renda Variável",
+  "slug": "renda-variavel",
+  "descricao": "Ativos de renda variável"
+}
+
+### Recuperar o ID da tag criada
+@idRTagRendaVariavel = {{TagRendaVariavel.response.body._id}}
+
+############################################################################################
+### Criar tag raiz
+# @name TagRendaFixa
+POST {{baseUrl}}/tags-ativos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Renda Fixa",
+  "slug": "renda-fixa",
+  "descricao": "Ativos de renda fixa"
+}
+
+### Recuperar o ID da tag criada
+@idTagRendaFixa = {{TagRendaFixa.response.body._id}}
+
+############################################################################################
+### Criar subtipo de tag
+# @name TagAcoes
+POST {{baseUrl}}/tags-ativos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Ações",
+  "slug": "acoes",
+  "descricao": "Ações negociadas em bolsa",
+  "idPai": "{{idRTagRendaVariavel}}"
+}
+
+############################################################################################
+### Criar subtipo de tag
+# @name TagFIIs
+POST {{baseUrl}}/tags-ativos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "FIIs",
+  "slug": "fiis",
+  "descricao": "Fundos de Investimento Imobiliário",
+  "idPai": "{{idRTagRendaVariavel}}"
+}
+
+############################################################################################
+### Criar subtipo de tag
+# @name TagTesouroDireto
+POST {{baseUrl}}/tags-ativos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Tesouro Direto",
+  "slug": "tesouro-direto",
+  "descricao": "Títulos de renda fixa do Tesouro",
+  "idPai": "{{idTagRendaFixa}}"
+}
+

@@ -1,59 +1,98 @@
-1. Modelo (src/models/NovaEntidade.js)
-Define a estrutura no MongoDB. 
+================================================================================
+ROTEIRO PARA CRIAÇÃO DE NOVAS ENTIDADES E FUNCIONALIDADES
+================================================================================
 
-Se for Global (ex: ClasseAtivo, Corretora): Não precisa de vínculo de portfólio. 
+1. MODELO (src/models/NovaEntidade.js)
+--------------------------------------------------------------------------------
+Define a estrutura no MongoDB (Schema, tipos e índices).
 
-Se for Tenant/Local (ex: CategoriaAtivo, Investidor): DEVE ter idPortfolio. 
+- Se for Global (ex: ClasseAtivo, Corretora, Ativo):
+  Não precisa de vínculo de portfólio.
+  
+- Se for Local / Tenant (ex: CategoriaAtivo, Investidor, Transacao, MetaAlocacao):
+  DEVE conter o campo `idPortfolio` (ObjectId referenciando 'Portfolio', required: true).
 
-
-Registo no Barrel: Adiciona ao src/models/index.js. 
-
-2. Validador (src/validators/novaEntidadeValidator.js)
-Usa o Zod para criar o contrato de dados.
-
-Define campos obrigatórios, tipos e mensagens de erro amigáveis.
-
-
-Registo no Barrel: Adiciona ao src/validators/index.js. 
-
-3. Serviço (src/services/novaEntidadeService.js)
-Contém a lógica de persistência pura. 
-
-Não deve tocar em req ou res. 
+- Registro no Barrel:
+  Adicione a exportação em src/models/index.js.
 
 
-Registo no Barrel: Adiciona ao src/services/index.js. 
+2. VALIDADOR (src/validators/novaEntidadeValidator.js)
+--------------------------------------------------------------------------------
+Usa o Zod para criar o contrato de entrada e tipagem estrita da requisição HTTP.
 
-4. Controlador (src/controllers/novaEntidadeController.js)
-Atua como o maestro da requisição HTTP. 
+- Define campos obrigatórios, regras de validação (regex de ObjectId, min/max, datas) e mensagens amigáveis.
+- Aplica transformações se necessário (ex: .transform(v => v?.toUpperCase())).
 
-Valida dados com o Zod. 
-
-Verifica permissões com req.habilidades (CASL). 
-
-
-Registo no Barrel: Adiciona ao src/controllers/index.js. 
-
-5. Rotas (src/routes/novaEntidadeRoutes.js)
-Define os endpoints e aplica os middlewares. 
+- Registro no Barrel:
+  Adicione a exportação em src/validators/index.js.
 
 
-Global: Usa autenticar e autorizacaoGlobal. 
+3. SERVIÇO (src/services/novaEntidadeService.js)
+--------------------------------------------------------------------------------
+Contém a lógica de negócio pura e as operações com o banco de dados.
+
+- NUNCA deve acessar objetos do Express (req ou res). Recebe apenas parâmetros puros (dados, idUsuario, idPortfolio, session).
+- Se a operação envolver múltiplas coleções (ex: Transação + Posição), utilize transações ACID (mongoose.startSession()).
+- Exportação como Singleton: module.exports = new NovaEntidadeService();
+
+- Registro no Barrel:
+  Adicione a exportação em src/services/index.js.
 
 
-Por Portfólio: Usa autenticar e autorizacaoPortfolio. 
+4. CONTROLADOR (src/controllers/novaEntidadeController.js)
+--------------------------------------------------------------------------------
+Atua como o maestro da requisição HTTP.
+
+- Valida os dados de entrada usando Zod (schema.parse(req.body)).
+- Extrai parâmetros de req.params, req.query e a identidade do usuário (req.usuario._id).
+- NÃO coloca regras manuais de segurança (como if (!idsPermitidos...)): a segurança e permissões já são validadas antes pelos Middlewares!
+- Chama o Service, retorna status HTTP semântico (200, 201) e repassa erros no catch via next(erro).
+- Exportação como Singleton: module.exports = new NovaEntidadeController();
+
+- Registro no Barrel:
+  Adicione a exportação em src/controllers/index.js.
 
 
-Registo no Servidor: Liga o ficheiro ao prefixo correto no src/server.js. 
+5. ROTAS E MIDDLEWARES (src/routes/novaEntidadeRoutes.js)
+--------------------------------------------------------------------------------
+Define os endpoints e aplica a camada de segurança apropriada:
 
-O Checklist do Erro "Undefined"
-Se o servidor crashar com TypeError: Cannot read properties of undefined, verifica:
+A) Rotas Globais (ex: Classes de Ativos, Corretoras):
+   - Leitura pública / autenticada: autenticar, autorizacaoGlobal()
+   - Ações restritas (Admin): autenticar, autorizacaoGlobal("gerir", "NomeEntidade")
+
+B) Rotas Específicas de Portfólio (Single Portfolio - Params ou Body):
+   - Valida acesso e papel no CASL (Dono vs Leitor):
+     autenticar, autorizacaoPortfolio("acao", "NomeEntidade")
+     Exemplos:
+     - autorizacaoPortfolio("ler", "CategoriaAtivo")
+     - autorizacaoPortfolio("gerir", "Transacao") (captura idPortfolio do body ou params)
+
+C) Rotas de Listagem Consolidada / Multi-Tenant (Data Scoping):
+   - autenticar, escopoPortfolios
+   - Injeta req.escopoPortfolios e barra automaticamente se um ?idPortfolio= não autorizado for enviado na query.
+
+- Registro no Roteador Principal:
+  - Se a rota for aninhada ao portfólio (ex: /api/portfolios/:idPortfolio/minha-entidade):
+    Use const router = express.Router({ mergeParams: true }); e registre em src/routes/portfolioRoutes.js.
+  - Se a rota for raiz (ex: /api/minha-entidade):
+    Registre em src/routes/index.js.
 
 
-Chaves na Importação: Estás a usar { } num ficheiro que foi exportado com module.exports = nome (sem chaves)? 
+================================================================================
+CHECKLIST PARA EVITAR ERROS COMUNS (O Guia de Sobrevivência)
+================================================================================
+1. Chaves na Importação:
+   - Se exportou como instância única (module.exports = new Service()), importe sem chaves ou desestruture do Barrel: const { service } = require("../services").
 
+2. Esquecimento no Barrel:
+   - Criou Model, Validator, Service ou Controller? Atualize IMEDIATAMENTE o index.js da pasta correspondente.
 
-Esquecimento no Barrel: Adicionaste o novo ficheiro ao index.js da pasta correspondente? 
+3. Identificador do Usuário:
+   - Sempre utilize req.usuario._id (nunca req.user.id).
 
+4. MergeParams:
+   - Se a rota precisa do :idPortfolio definido na rota pai, configure express.Router({ mergeParams: true }).
 
-Ficheiro Salvo: O VS Code está com a "bolinha branca" de arquivo não salvo?
+5. Arquivo Salvo:
+   - Verifique se todos os arquivos editados estão salvos no editor antes de testar.
